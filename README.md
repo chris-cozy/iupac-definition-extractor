@@ -1,7 +1,5 @@
 # iupac-definition-extractor
 
-This Python program serves to extract definitions from the IUPAC key-value store by searching through a JSON file based on user-defined terms. Utilizing Pandas, it generates a table and exports the retrieved definitions into a downloadable CSV format. This tool facilitates easy access to IUPAC terminology.
-
 The IUPAC Term Extractor is a Python tool designed to search and extract definitions from a JSON file containing IUPAC (International Union of Pure and Applied Chemistry) terminology. This tool utilizes user-defined terms to locate corresponding entries within the JSON dataset and generates a CSV file containing relevant metadata.
 
 ## Features
