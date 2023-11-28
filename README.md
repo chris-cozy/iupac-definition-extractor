@@ -37,7 +37,7 @@ The script includes a set of tests using Python's unittest module to ensure its 
 1. Navigate to the project directory in the terminal.
 2. Execute the following command:
 ```
-python -m unittest test_iupac_extractor.py
+python -m unittest test_extractor.py
 ```
 ### Test Cases
 - **Test valid data**: Checks if the search function generates the expected CSV file with valid data.
