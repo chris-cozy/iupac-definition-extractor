@@ -31,6 +31,19 @@ python iupac_extractor.py
 ```
 Ensure to modify the `input_json_file`, `output_csv_file`, and `terms_to_extract` variables within the `iupac_extractor.py` script according to your requirements.
 
+## Testing
+The script includes a set of tests using Python's unittest module to ensure its functionality:
+### Running Tests
+1. Navigate to the project directory in the terminal.
+2. Execute the following command:
+```
+python -m unittest test_extractor.py
+```
+### Test Cases
+- **Test valid data**: Checks if the search function generates the expected CSV file with valid data.
+- **Test invalid JSON file**: Verifies if the function raises a FileNotFoundError when an invalid JSON file is provided.
+- **Clean up**: Removes temporary files created during testing to maintain cleanliness.
+
 ## Contributing
 Contributions to enhance functionality, improve code quality, or address issues are welcome! Please fork the repository, create a new branch, and submit a pull request.
 
