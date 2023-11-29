@@ -25,9 +25,9 @@ pip install pandas
 - **Terms to Extract**: Specify the terms of interest within the terms_to_extract list in the code.
 ### Running the Program
 ```
-python iupac_extractor.py
+python extractor.py
 ```
-Ensure to modify the `input_json_file`, `output_csv_file`, and `terms_to_extract` variables within the `iupac_extractor.py` script according to your requirements.
+Ensure to modify the `input_json_file`, `output_csv_file`, and `terms_to_extract` variables within the `extractor.py` script according to your requirements.
 
 ## Testing
 The script includes a set of tests using Python's unittest module to ensure its functionality:
