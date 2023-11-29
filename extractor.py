@@ -6,9 +6,9 @@ def search(terms, json_file, csv_file):
     try:
         with open(json_file, 'r', encoding='utf-8') as file:
             data = json.load(file)
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         print(f"Error: File '{json_file}' not found.")
-        return
+        raise e
 
     extracted_data = []
 
