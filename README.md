@@ -8,23 +8,18 @@ The IUPAC Definition Extractor is a Python tool designed to search and extract d
 - **CSV Generation**: Creates a structured table in CSV format containing extracted data for easy access and integration into various applications.
 - **Error Handling**: Provides error messages in case of file loading or conversion issues for seamless troubleshooting.
 
-## Installation
-1. Clone this repository to your local machine
-```
-git clone https://github.com/your-username/iupac-definition-extractor.git
-```
-2. Install the required dependencies
-```
-pip install pandas
-```
-
 ## Usage
 ### Inputs
 - **JSON File**: A JSON file containing IUPAC terminology (goldbook_terms_2023_.json in this example).
 - **Output CSV File**: A CSV file where extracted data will be saved (extracted_terms.csv in this example).
 - **Terms to Extract**: Specify the terms of interest within the terms_to_extract list in the code.
-### Running the Program
+### Running the Program (Windows using Python Venv)
 ```
+git clone https://github.com/chris-cozy/iupac-definition-extractor.git
+cd iupac-definition-extractor
+python -m venv extractor_env
+source extractor_env/Scripts/activate
+pip install -r requirements_versions.txt
 python extractor.py
 ```
 Ensure to modify the `input_json_file`, `output_csv_file`, and `terms_to_extract` variables within the `extractor.py` script according to your requirements.
@@ -32,7 +27,10 @@ Ensure to modify the `input_json_file`, `output_csv_file`, and `terms_to_extract
 ## Testing
 The script includes a set of tests using Python's unittest module to ensure its functionality:
 ### Running Tests
-1. Navigate to the project directory in the terminal.
+1. Entered the virtual environment being used if not in use already.
+```
+source extractor_env/Scripts/activate
+```
 2. Execute the following command:
 ```
 python -m unittest test_extractor.py
