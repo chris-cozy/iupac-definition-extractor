@@ -1,5 +1,22 @@
 import pandas as pd
 import json
+import requests
+from bs4 import BeautifulSoup
+
+def get_definition(url):
+    # Perform web scraping to extract the definition from the IUPAC website
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            # Assuming the definition is inside a specific HTML tag or class
+            definition = soup.find('div', class_='deftext').get_text()  # Update this according to HTML structure
+            return definition.strip()
+        else:
+            print(f"Failed to fetch definition for URL: {url}")
+    except Exception as e:
+        print(f"Error occurred while fetching definition: {e}")
+    return None
 
 def search(terms, json_file, csv_file):
     # Load the JSON data
@@ -16,10 +33,12 @@ def search(terms, json_file, csv_file):
     for term in terms:
         for key, value in data['terms']['list'].items():
             if value['title'] == term:
+                definition = get_definition(value['url']) # Fetch definition using the URL
                 extracted_data.append({
                     'Title': value['title'],
                     'Status': value['status'],
-                    'URL': value['url']
+                    'URL': value['url'],
+                    'Definition': definition
                 })
 
     
