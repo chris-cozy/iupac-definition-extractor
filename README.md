@@ -1,8 +1,6 @@
 # iupac-definition-extractor
 
-This Python program serves to extract definitions from the IUPAC key-value store by searching through a JSON file based on user-defined terms. Utilizing Pandas, it generates a table and exports the retrieved definitions into a downloadable CSV format. This tool facilitates easy access to IUPAC terminology.
-
-The IUPAC Term Extractor is a Python tool designed to search and extract definitions from a JSON file containing IUPAC (International Union of Pure and Applied Chemistry) terminology. This tool utilizes user-defined terms to locate corresponding entries within the JSON dataset and generates a CSV file containing relevant metadata.
+The IUPAC Definition Extractor is a Python tool designed to search and extract definitions from a JSON file containing IUPAC (International Union of Pure and Applied Chemistry) terminology. This tool utilizes user-defined terms to locate corresponding entries within the JSON dataset and generates a CSV file containing relevant metadata.
 
 ## Features
 - **Search Functionality**: Allows users to specify terms of interest to search within the provided JSON file.
@@ -13,7 +11,7 @@ The IUPAC Term Extractor is a Python tool designed to search and extract definit
 ## Installation
 1. Clone this repository to your local machine
 ```
-git clone https://github.com/your-username/iupac-term-extractor.git
+git clone https://github.com/your-username/iupac-definition-extractor.git
 ```
 2. Install the required dependencies
 ```
@@ -27,9 +25,9 @@ pip install pandas
 - **Terms to Extract**: Specify the terms of interest within the terms_to_extract list in the code.
 ### Running the Program
 ```
-python iupac_extractor.py
+python extractor.py
 ```
-Ensure to modify the `input_json_file`, `output_csv_file`, and `terms_to_extract` variables within the `iupac_extractor.py` script according to your requirements.
+Ensure to modify the `input_json_file`, `output_csv_file`, and `terms_to_extract` variables within the `extractor.py` script according to your requirements.
 
 ## Testing
 The script includes a set of tests using Python's unittest module to ensure its functionality:
