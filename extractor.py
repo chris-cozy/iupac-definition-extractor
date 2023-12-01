@@ -3,6 +3,22 @@ import json
 import requests
 from bs4 import BeautifulSoup
 
+
+# Function to find nested divs with class 'term'
+def find_nested_terms(element):
+    terms = []
+    if element.name == 'div' and 'term' in element.get('class', []):
+        terms.append(element.text)  # Do whatever you want with the found div element
+    for child in element.children:
+        print(child)
+        if child.name == 'div' and 'term' in child.get('class', []):
+            terms.append(child.text)  # Do whatever you want with the found div element
+        if child.name is not None:
+            child_terms = find_nested_terms(child)
+            for term in child_terms:
+                terms.append(term)
+    return terms
+
 def get_definition(url):
     # Perform web scraping to extract the definition from the IUPAC website
     try:
@@ -10,13 +26,19 @@ def get_definition(url):
         if response.status_code == 200:
             soup = BeautifulSoup(response.content, 'html.parser')
             # Assuming the definition is inside a specific HTML tag or class
-            definition = soup.find('div', class_='deftext').get_text()  # Update this according to HTML structure
+            outer_div = soup.find('div', class_='deftext')  # Update this according to HTML structure
+            terms = find_nested_terms(outer_div)
+            for term in terms:
+                print(term)
+            definition = outer_div.get_text()
+            #print(definition)
             return definition.strip()
         else:
             print(f"Failed to fetch definition for URL: {url}")
     except Exception as e:
         print(f"Error occurred while fetching definition: {e}")
     return None
+
 
 def search(terms, json_file, csv_file):
     # Load the JSON data
