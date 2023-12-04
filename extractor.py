@@ -2,36 +2,39 @@ import pandas as pd
 import json
 import requests
 from bs4 import BeautifulSoup
+import html
 
 
 # Function to find nested divs with class 'term'
 def find_nested_terms(element):
-    terms = []
+    if element is None:
+        return  # If the element is None, exit the function
+
     if element.name == 'div' and 'term' in element.get('class', []):
-        terms.append(element.text)  # Do whatever you want with the found div element
+        print(element.text)  # If element is a term
     for child in element.children:
-        print(child)
-        if child.name == 'div' and 'term' in child.get('class', []):
-            terms.append(child.text)  # Do whatever you want with the found div element
         if child.name is not None:
-            child_terms = find_nested_terms(child)
-            for term in child_terms:
-                terms.append(term)
-    return terms
+            find_nested_terms(child)
+
 
 def get_definition(url):
     # Perform web scraping to extract the definition from the IUPAC website
     try:
         response = requests.get(url)
+        response.encoding = 'utf-8'  # Set the correct encoding
+
         if response.status_code == 200:
-            soup = BeautifulSoup(response.content, 'html.parser')
-            # Assuming the definition is inside a specific HTML tag or class
-            outer_div = soup.find('div', class_='deftext')  # Update this according to HTML structure
-            terms = find_nested_terms(outer_div)
-            for term in terms:
-                print(term)
-            definition = outer_div.get_text()
-            #print(definition)
+
+            html_content = response.text
+            decoded_content = html.unescape(html_content)
+            soup = BeautifulSoup(decoded_content, 'html.parser')
+
+            deftext_div = soup.find('div', class_='deftext')  # Update this according to HTML structure
+            find_nested_terms(deftext_div)
+            
+            definition = deftext_div.get_text()
+
+            print(definition)
             return definition.strip()
         else:
             print(f"Failed to fetch definition for URL: {url}")
