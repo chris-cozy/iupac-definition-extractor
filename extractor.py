@@ -3,19 +3,53 @@ import json
 import requests
 from bs4 import BeautifulSoup
 import html
+import re
 
+# Function to extract text between two specific symbols
+# Params: Orginal text
+# Output: Ordered list of extracted terms
+def extract_between_custom_symbols(text, start_symbol, end_symbol):
+    pattern = re.compile(re.escape(start_symbol) + '(.*?)' + re.escape(end_symbol))
+    matches = pattern.findall(text)
+    return matches
 
-# Function to find nested divs with class 'term'
-def find_nested_terms(element):
-    if element is None:
-        return  # If the element is None, exit the function
+# Function to replace the IDs with the appropriate string
+# Params: Original text, List of ordered sub_terms
+# Output: Revised text with sub_terms inserted
+def replace_with_list_items(text, replacement_list):
+    pattern = re.compile(r'@(.*?)@')
+    replaced_text = pattern.sub(lambda x: replacement_list.pop(0), text)
+    return replaced_text
 
-    if element.name == 'div' and 'term' in element.get('class', []):
-        print(element.text)  # If element is a term
-    for child in element.children:
-        if child.name is not None:
-            find_nested_terms(child)
+# Function to grab the term from the url
+def id_to_term(id_list):
+    sub_terms = [];
+    for id in id_list:
+        url = 'https://doi.org/10.1351/goldbook.' + id
+        #print(url)
+        try:
+            response = requests.get(url)
+            response.encoding = 'utf-8'  # Set the correct encoding
 
+            if response.status_code == 200:
+
+                html_content = response.text
+                decoded_content = html.unescape(html_content)
+                soup = BeautifulSoup(decoded_content, 'html.parser')
+
+                element = soup.find('div', class_='panel-footer text-justify')
+                dirty_term = element.get_text()
+
+                clean_term = extract_between_custom_symbols(dirty_term, "'", "'")
+                
+                #print(clean_term)
+                
+                sub_terms.append(clean_term[0])
+            else:
+                print(f"Failed to fetch term for URL: {url}")
+        except Exception as e:
+            print(f"Error occurred while fetching term: {e}")
+    return sub_terms
 
 def get_definition(url):
     # Perform web scraping to extract the definition from the IUPAC website
@@ -30,11 +64,8 @@ def get_definition(url):
             soup = BeautifulSoup(decoded_content, 'html.parser')
 
             deftext_div = soup.find('div', class_='deftext')  # Update this according to HTML structure
-            find_nested_terms(deftext_div)
             
             definition = deftext_div.get_text()
-
-            print(definition)
             return definition.strip()
         else:
             print(f"Failed to fetch definition for URL: {url}")
@@ -59,11 +90,16 @@ def search(terms, json_file, csv_file):
         for key, value in data['terms']['list'].items():
             if value['title'] == term:
                 definition = get_definition(value['url']) # Fetch definition using the URL
+                sub_term_ids = extract_between_custom_symbols(definition, "@", "@")
+                print(sub_term_ids)
+                sub_terms = id_to_term(sub_term_ids)
+                print(sub_terms)
+                subbed_definition = replace_with_list_items(definition, sub_terms)
                 extracted_data.append({
                     'Title': value['title'],
                     'Status': value['status'],
                     'URL': value['url'],
-                    'Definition': definition
+                    'Definition': subbed_definition
                 })
 
     
