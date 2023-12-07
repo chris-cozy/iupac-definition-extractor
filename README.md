@@ -36,9 +36,10 @@ source extractor_env/Scripts/activate
 python -m unittest test_extractor.py
 ```
 ### Test Cases
-- **Test valid data**: Checks if the search function generates the expected CSV file with valid data.
-- **Test invalid JSON file**: Verifies if the function raises a FileNotFoundError when an invalid JSON file is provided.
-- **Clean up**: Removes temporary files created during testing to maintain cleanliness.
+- **Test extract between custom symbols**: Checks whether the function correctly extracts text between specified start and end symbols from a given text.
+- **Test replace with list items**: Verifies that the function correctly replaces placeholders in the text with items from a given replacement list.
+- **Test id to term**: Checks whether the function retrieves terms from URLs based on the provided list of IDs and ensures proper handling of HTTP requests.
+- **Test get definition**: Verifies the functionality of fetching definitions from URLs, including the proper retrieval and extraction of definition text.
 
 ## Contributing
 Contributions to enhance functionality, improve code quality, or address issues are welcome! Please fork the repository, create a new branch, and submit a pull request.
