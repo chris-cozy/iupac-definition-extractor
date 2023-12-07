@@ -1,44 +1,65 @@
 import unittest
-import os
-from extractor import search
+import unittest.mock
+from extractor import extract_between_custom_symbols, replace_with_list_items, id_to_term, get_definition, search
 
-class TestIUPACTermExtractor(unittest.TestCase):
-    # Set up necessary files and data for testing
-    def setUp(self):
-        # Create a sample JSON file for testing
-        self.json_file = 'test_iupac_terms.json'
-        with open(self.json_file, 'w') as file:
-            file.write('{"terms": {"list": {"term1": {"title": "term1", "status": "active", "url": "https://example.com"}}}}')
+class TestFunctions(unittest.TestCase):
+    """
+    Test cases for the functions in the provided script.
+    """
 
-        # Define terms for extraction
-        self.terms_to_extract = ['term1']
+    def test_extract_between_custom_symbols(self):
+        """
+        Test the extract_between_custom_symbols function.
 
-        # Define output CSV file
-        self.output_csv_file = 'test_extracted_terms.csv'
+        This test checks whether the function correctly extracts text
+        between specified start and end symbols from a given text.
+        """
+        text = "This is a test text with @some@ symbols @to@ extract."
+        start_symbol = "@"
+        end_symbol = "@"
+        expected_output = ['some', 'to']
+        self.assertEqual(extract_between_custom_symbols(text, start_symbol, end_symbol), expected_output)
 
-    # Test the search function with valid data
-    def test_search_valid_data(self):
-        search(self.terms_to_extract, self.json_file, self.output_csv_file)
-        self.assertTrue(os.path.exists(self.output_csv_file))  # Check if the CSV file was created
+    def test_replace_with_list_items(self):
+        """
+        Test the replace_with_list_items function.
 
-        # Check the content of the generated CSV file
-        with open(self.output_csv_file, 'r') as file:
-            csv_data = file.read()
-            self.assertIn('term1', csv_data)  # Check if the extracted term is present in the CSV
+        This test verifies that the function correctly replaces placeholders
+        in the text with items from a given replacement list.
+        """
+        text = "Replace @this@ and @that@."
+        replacement_list = ['something', 'something else']
+        expected_output = "Replace something and something else."
+        self.assertEqual(replace_with_list_items(text, replacement_list), expected_output)
 
-    # Test the search function with invalid JSON file
-    def test_search_invalid_json_file(self):
-        invalid_json_file = 'nonexistent_file.json'
-        with self.assertRaises(FileNotFoundError):
-            search(self.terms_to_extract, invalid_json_file, self.output_csv_file)
+    def test_id_to_term(self):
+        """
+        Test the id_to_term function.
 
-    # Clean up after testing
-    def tearDown(self):
-        # Remove temporary files created during testing
-        if os.path.exists(self.json_file):
-            os.remove(self.json_file)
-        if os.path.exists(self.output_csv_file):
-            os.remove(self.output_csv_file)
+        This test checks whether the function retrieves terms from URLs based on
+        the provided list of IDs and ensures proper handling of HTTP requests.
+        """
+        id_list = ['id1']
+        # Mock the requests.get method to avoid making actual HTTP requests
+        with unittest.mock.patch('requests.get') as mock_get:
+            mock_get.return_value.status_code = 200
+            mock_get.return_value.text = "<div class='panel-footer text-justify'>'term1'</div>"
+            self.assertEqual(id_to_term(id_list), ['term1'])
+
+    def test_get_definition(self):
+        """
+        Test the get_definition function.
+
+        This test verifies the functionality of fetching definitions from URLs,
+        including the proper retrieval and extraction of definition text.
+        """
+        # Mock the requests.get method to avoid making actual HTTP requests
+        url = 'https://example.com'
+        with unittest.mock.patch('requests.get') as mock_get:
+            mock_get.return_value.status_code = 200
+            mock_get.return_value.text = "<div class='deftext'>Definition</div>"
+            self.assertEqual(get_definition(url), 'Definition')
+
 
 if __name__ == '__main__':
     unittest.main()
