@@ -5,24 +5,47 @@ from bs4 import BeautifulSoup
 import html
 import re
 
-# Function to extract text between two specific symbols
-# Params: Orginal text
-# Output: Ordered list of extracted terms
 def extract_between_custom_symbols(text, start_symbol, end_symbol):
+    """
+    Extracts text between specified start and end symbols from a given text.
+
+    Args:
+    - text (str): The original text containing the desired content.
+    - start_symbol (str): The starting symbol to identify the beginning of the content to extract.
+    - end_symbol (str): The ending symbol to identify the end of the content to extract.
+
+    Returns:
+    - list: Ordered list of extracted terms between the specified symbols.
+    """
     pattern = re.compile(re.escape(start_symbol) + '(.*?)' + re.escape(end_symbol))
     matches = pattern.findall(text)
     return matches
 
-# Function to replace the IDs with the appropriate string
-# Params: Original text, List of ordered sub_terms
-# Output: Revised text with sub_terms inserted
 def replace_with_list_items(text, replacement_list):
+    """
+    Replaces placeholders in the text with items from a given list.
+
+    Args:
+    - text (str): The original text containing placeholders.
+    - replacement_list (list): List of items to replace the placeholders in the text.
+
+    Returns:
+    - str: Revised text with placeholders replaced by items from the list.
+    """
     pattern = re.compile(r'@(.*?)@')
     replaced_text = pattern.sub(lambda x: replacement_list.pop(0), text)
     return replaced_text
 
-# Function to grab the term from the url
 def id_to_term(id_list):
+    """
+    Retrieves terms from URLs based on the provided list of IDs.
+
+    Args:
+    - id_list (list): List of IDs used to generate URLs for term retrieval.
+
+    Returns:
+    - list: List of extracted terms corresponding to the provided IDs.
+    """
     sub_terms = [];
     for id in id_list:
         url = 'https://doi.org/10.1351/goldbook.' + id
@@ -52,7 +75,15 @@ def id_to_term(id_list):
     return sub_terms
 
 def get_definition(url):
-    # Perform web scraping to extract the definition from the IUPAC website
+    """
+    Fetches the definition from a given URL (IUPAC website).
+
+    Args:
+    - url (str): The URL from which the definition is to be fetched.
+
+    Returns:
+    - str or None: Extracted definition text if successful, otherwise None.
+    """
     try:
         response = requests.get(url)
         response.encoding = 'utf-8'  # Set the correct encoding
@@ -75,7 +106,17 @@ def get_definition(url):
 
 
 def search(terms, json_file, csv_file):
-    # Load the JSON data
+    """
+    Searches for terms in a JSON file, extracts metadata, and creates a CSV file with extracted data.
+
+    Args:
+    - terms (list): List of terms to search for in the JSON data.
+    - json_file (str): Path to the JSON file containing term metadata.
+    - csv_file (str): Path to the CSV file to be created with extracted data.
+
+    Returns:
+    - None
+    """
     try:
         with open(json_file, 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -111,7 +152,7 @@ def search(terms, json_file, csv_file):
     except Exception as e:
         print(f"Error occurred while converting to CSV: {e}")
 
-# Code to execute when the file is run directly
+
 if __name__ == "__main__":
     input_json_file = 'goldbook_terms_2023_.json'
     output_csv_file = 'extracted_terms.csv'
