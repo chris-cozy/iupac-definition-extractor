@@ -1,6 +1,7 @@
 extractor_env/
 
 extracted_terms.csv
+input_terms.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
