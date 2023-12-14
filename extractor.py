@@ -128,6 +128,18 @@ def search(terms, json_file, csv_file):
 if __name__ == "__main__":
     input_json_file = 'goldbook_terms_2023_.json'
     output_csv_file = 'extracted_terms.csv'
-    terms_to_extract = ['α (alpha), β (beta)', 'α-addition', 'α-decay', 'backbone']
 
+    input_csv_file = 'input_terms.csv'
+    terms_to_extract = []
+
+    try:
+        with open(input_csv_file, 'r', encoding='utf-8') as csv_file:
+            # Read each line (term) from the CSV file
+            for line in csv_file:
+                terms_to_extract.append(line.strip())  # Append each term to the list
+    except FileNotFoundError as e:
+        print(f"Error: File '{input_csv_file}' not found.")
+        raise e
+
+    print(terms_to_extract)
     search(terms_to_extract, input_json_file, output_csv_file)
