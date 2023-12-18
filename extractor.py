@@ -5,6 +5,19 @@ from bs4 import BeautifulSoup
 import html
 import re
 import os
+import csv
+
+def sanitize_term(term):
+    """
+    Sanitizes a term by removing leading/trailing whitespaces and special characters.
+
+    Args:
+    - term (str): The term to be sanitized.
+
+    Returns:
+    - str: Sanitized term.
+    """
+    return term.strip()
 
 def extract_between_custom_symbols(text, start_symbol, end_symbol):
     """
@@ -149,9 +162,11 @@ if __name__ == "__main__":
 
     try:
         with open(input_csv_file, 'r', encoding='utf-8') as csv_file:
-            # Read each line (term) from the CSV file
-            for line in csv_file:
-                terms_to_extract.append(line.strip())  # Append each term to the list
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                if len(row) > 0:
+                    term = sanitize_term(row[0])
+                    terms_to_extract.append(term)
     except FileNotFoundError as e:
         print(f"Error: File '{input_csv_file}' not found.")
         raise e
