@@ -70,7 +70,10 @@ def id_to_term(id_list):
                 element = soup.find('div', class_='panel-footer text-justify')
                 dirty_term = element.get_text()
                 clean_term = extract_between_custom_symbols(dirty_term, "'", "'")
-                sub_terms.append(clean_term[0])
+                if clean_term:
+                    sub_terms.append(clean_term[0])
+                else:
+                    print("Error: Term extraction failed.")
         except Exception as e:
             print(f"Error occurred while fetching term: {e}")
     return sub_terms
@@ -85,6 +88,11 @@ def get_definition(url):
     Returns:
     - str or None: Extracted definition text if successful, otherwise None.
     """
+    # Validate URL format
+    if not url.startswith('https://doi.org/'):
+        print("Error: Invalid URL format.")
+        return None
+    
     try:
         response = requests.get(url)
         response.encoding = 'utf-8'
@@ -92,7 +100,13 @@ def get_definition(url):
             decoded_content = html.unescape(response.text)
             soup = BeautifulSoup(decoded_content, 'html.parser')
             deftext_div = soup.find('div', class_='deftext')
-            return deftext_div.get_text().strip()
+            if deftext_div:
+                return deftext_div.get_text().strip()
+            else:
+                print("Error: Definition not found in the retrieved content.")
+                return None
+        else:
+            print(f"Failed to fetch definition for URL: {url}")
     except Exception as e:
         print(f"Error occurred while fetching definition: {e}")
     return None
