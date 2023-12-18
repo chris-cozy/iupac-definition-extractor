@@ -139,6 +139,14 @@ if __name__ == "__main__":
     input_csv_file = 'input_terms.csv'
     terms_to_extract = []
 
+    if not os.path.isfile(input_csv_file):
+        print(f"Error: File '{input_csv_file}' does not exist.")
+        exit()
+
+    if not os.access(input_csv_file, os.R_OK):
+        print(f"Error: No read permissions for file '{input_csv_file}'.")
+        exit()
+
     try:
         with open(input_csv_file, 'r', encoding='utf-8') as csv_file:
             # Read each line (term) from the CSV file
