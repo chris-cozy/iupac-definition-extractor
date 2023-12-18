@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import html
 import re
+import os
 
 def extract_between_custom_symbols(text, start_symbol, end_symbol):
     """
@@ -127,7 +128,13 @@ def search(terms, json_file, csv_file):
 
 if __name__ == "__main__":
     input_json_file = 'goldbook_terms_2023_.json'
-    output_csv_file = 'extracted_terms.csv'
+    if not os.path.isfile(input_json_file):
+        print(f"Error: File '{input_json_file}' does not exist.")
+        exit()
+
+    if not os.access(input_json_file, os.R_OK):
+        print(f"Error: No read permissions for file '{input_json_file}'.")
+        exit()
 
     input_csv_file = 'input_terms.csv'
     terms_to_extract = []
@@ -141,5 +148,9 @@ if __name__ == "__main__":
         print(f"Error: File '{input_csv_file}' not found.")
         raise e
 
-    print(terms_to_extract)
+    output_csv_file = 'extracted_terms.csv'
+    if os.path.exists(output_csv_file):
+        if not os.access(output_csv_file, os.W_OK):
+            print(f"Error: No write permissions for file '{output_csv_file}'.")
+            exit()
     search(terms_to_extract, input_json_file, output_csv_file)
