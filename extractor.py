@@ -48,34 +48,30 @@ def replace_with_list_items(text, replacement_list):
     pattern = re.compile(r'@(.*?)@')
     return pattern.sub(lambda x: replacement_list.pop(0), text)
 
-def id_to_term(id_list):
+def id_to_term(json_file, id_list):
     """
-    Retrieves terms from URLs based on the provided list of IDs.
+    Retrieves subterm names from a provided JSON file based on a list of IDs.
 
     Args:
-    - id_list (list): List of IDs used to generate URLs for term retrieval.
+    - json_file (str): Path to the JSON file containing term metadata.
+    - id_list (list): List of IDs used to retrieve subterm names.
 
     Returns:
-    - list: List of extracted terms corresponding to the provided IDs.
+    - list: List of extracted subterm names corresponding to the provided IDs.
     """
-    sub_terms = [];
+    try:
+        with open(json_file, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+    except FileNotFoundError as e:
+        print(f"Error: File '{json_file}' not found.")
+        raise e
+    
+    sub_terms = []
     for id in id_list:
-        url = f'https://doi.org/10.1351/goldbook.{id}'
-        try:
-            response = requests.get(url)
-            response.encoding = 'utf-8'
-            if response.status_code == 200:
-                decoded_content = html.unescape(response.text)
-                soup = BeautifulSoup(decoded_content, 'html.parser')
-                element = soup.find('div', class_='panel-footer text-justify')
-                dirty_term = element.get_text()
-                clean_term = extract_between_custom_symbols(dirty_term, "'", "'")
-                if clean_term:
-                    sub_terms.append(clean_term[0])
-                else:
-                    print("Error: Term extraction failed.")
-        except Exception as e:
-            print(f"Error occurred while fetching term: {e}")
+        subterm_name = data['terms']['list'][id]['title']
+        print(subterm_name)  # Printing the subterm name for demonstration
+        sub_terms.append(subterm_name)
+
     return sub_terms
 
 def get_definition(url):
@@ -136,7 +132,7 @@ def search(terms, json_file, csv_file):
             if value['title'] == term:
                 definition = get_definition(value['url'])
                 sub_term_ids = extract_between_custom_symbols(definition, "@", "@")
-                sub_terms = id_to_term(sub_term_ids)
+                sub_terms = id_to_term(json_file, sub_term_ids)
                 subbed_definition = replace_with_list_items(definition, sub_terms)
                 extracted_data.append({
                     'Title': value['title'],
