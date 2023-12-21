@@ -1,5 +1,7 @@
 import unittest
 import unittest.mock
+import json
+import os
 from extractor import extract_between_custom_symbols, replace_with_list_items, id_to_term, get_definition, search
 
 class TestFunctions(unittest.TestCase):
@@ -39,12 +41,30 @@ class TestFunctions(unittest.TestCase):
         This test checks whether the function retrieves terms from URLs based on
         the provided list of IDs and ensures proper handling of HTTP requests.
         """
-        id_list = ['id1']
-        # Mock the requests.get method to avoid making actual HTTP requests
-        with unittest.mock.patch('requests.get') as mock_get:
-            mock_get.return_value.status_code = 200
-            mock_get.return_value.text = "<div class='panel-footer text-justify'>'term1'</div>"
-            self.assertEqual(id_to_term(id_list), ['term1'])
+        test_json_data = {
+            "terms": {
+                "list": {
+                    "id1": {"title": "Subterm 1"},
+                    "id2": {"title": "Subterm 2"},
+                    # Add more test data as needed
+                }
+            }
+        }
+
+        with open('test_terms.json', 'w') as test_file:
+            json.dump(test_json_data, test_file)
+
+        # Test data and expected output
+        json_file = 'test_terms.json'
+        id_list = ['id1', 'id2']
+        expected_output = ["Subterm 1", "Subterm 2"]
+
+        result = id_to_term(json_file, id_list)
+
+        self.assertEqual(result, expected_output)
+
+        # Clean up: remove the temporary test JSON file
+        os.remove('test_terms.json')
 
     def test_get_definition(self):
         """
@@ -54,7 +74,7 @@ class TestFunctions(unittest.TestCase):
         including the proper retrieval and extraction of definition text.
         """
         # Mock the requests.get method to avoid making actual HTTP requests
-        url = 'https://example.com'
+        url = 'https://doi.org/'
         with unittest.mock.patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
             mock_get.return_value.text = "<div class='deftext'>Definition</div>"
