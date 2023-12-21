@@ -4,6 +4,20 @@ import requests
 from bs4 import BeautifulSoup
 import html
 import re
+import os
+import csv
+
+def sanitize_term(term):
+    """
+    Sanitizes a term by removing leading/trailing whitespaces and special characters.
+
+    Args:
+    - term (str): The term to be sanitized.
+
+    Returns:
+    - str: Sanitized term.
+    """
+    return term.strip()
 
 def extract_between_custom_symbols(text, start_symbol, end_symbol):
     """
@@ -56,7 +70,10 @@ def id_to_term(id_list):
                 element = soup.find('div', class_='panel-footer text-justify')
                 dirty_term = element.get_text()
                 clean_term = extract_between_custom_symbols(dirty_term, "'", "'")
-                sub_terms.append(clean_term[0])
+                if clean_term:
+                    sub_terms.append(clean_term[0])
+                else:
+                    print("Error: Term extraction failed.")
         except Exception as e:
             print(f"Error occurred while fetching term: {e}")
     return sub_terms
@@ -71,6 +88,11 @@ def get_definition(url):
     Returns:
     - str or None: Extracted definition text if successful, otherwise None.
     """
+    # Validate URL format
+    if not url.startswith('https://doi.org/'):
+        print("Error: Invalid URL format.")
+        return None
+    
     try:
         response = requests.get(url)
         response.encoding = 'utf-8'
@@ -78,7 +100,13 @@ def get_definition(url):
             decoded_content = html.unescape(response.text)
             soup = BeautifulSoup(decoded_content, 'html.parser')
             deftext_div = soup.find('div', class_='deftext')
-            return deftext_div.get_text().strip()
+            if deftext_div:
+                return deftext_div.get_text().strip()
+            else:
+                print("Error: Definition not found in the retrieved content.")
+                return None
+        else:
+            print(f"Failed to fetch definition for URL: {url}")
     except Exception as e:
         print(f"Error occurred while fetching definition: {e}")
     return None
@@ -127,19 +155,39 @@ def search(terms, json_file, csv_file):
 
 if __name__ == "__main__":
     input_json_file = 'goldbook_terms_2023_.json'
-    output_csv_file = 'extracted_terms.csv'
+    if not os.path.isfile(input_json_file):
+        print(f"Error: File '{input_json_file}' does not exist.")
+        exit()
+
+    if not os.access(input_json_file, os.R_OK):
+        print(f"Error: No read permissions for file '{input_json_file}'.")
+        exit()
 
     input_csv_file = 'input_terms.csv'
     terms_to_extract = []
 
+    if not os.path.isfile(input_csv_file):
+        print(f"Error: File '{input_csv_file}' does not exist.")
+        exit()
+
+    if not os.access(input_csv_file, os.R_OK):
+        print(f"Error: No read permissions for file '{input_csv_file}'.")
+        exit()
+
     try:
         with open(input_csv_file, 'r', encoding='utf-8') as csv_file:
-            # Read each line (term) from the CSV file
-            for line in csv_file:
-                terms_to_extract.append(line.strip())  # Append each term to the list
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                if len(row) > 0:
+                    term = sanitize_term(row[0])
+                    terms_to_extract.append(term)
     except FileNotFoundError as e:
         print(f"Error: File '{input_csv_file}' not found.")
         raise e
 
-    print(terms_to_extract)
+    output_csv_file = 'extracted_terms.csv'
+    if os.path.exists(output_csv_file):
+        if not os.access(output_csv_file, os.W_OK):
+            print(f"Error: No write permissions for file '{output_csv_file}'.")
+            exit()
     search(terms_to_extract, input_json_file, output_csv_file)
