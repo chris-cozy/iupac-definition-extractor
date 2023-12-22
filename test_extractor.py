@@ -38,8 +38,8 @@ class TestFunctions(unittest.TestCase):
         """
         Test the id_to_term function.
 
-        This test checks whether the function retrieves terms from URLs based on
-        the provided list of IDs and ensures proper handling of HTTP requests.
+        This test checks whether the function retrieves terms from the source JSON file based on
+        the provided list of IDs.
         """
         test_json_data = {
             "terms": {
