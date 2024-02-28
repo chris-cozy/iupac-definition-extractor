@@ -23,7 +23,7 @@ The IUPAC Definition Extractor is a Python tool designed to search and extract d
 git clone https://github.com/chris-cozy/iupac-definition-extractor.git
 cd iupac-definition-extractor
 python -m venv extractor_env
-source extractor_env/Scripts/activate
+extractor_env/Scripts/activate
 pip install -r requirements_versions.txt
 python extractor.py
 ```
