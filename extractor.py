@@ -135,7 +135,7 @@ def search(terms, json_file, csv_file):
                 sub_terms = id_to_term(json_file, sub_term_ids)
                 subbed_definition = replace_with_list_items(definition, sub_terms)
                 extracted_data.append({
-                    'Title': value['title'],
+                    'Term': value['title'],
                     'Status': value['status'],
                     'URL': value['url'],
                     'Definition': subbed_definition
