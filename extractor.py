@@ -134,11 +134,18 @@ def search(terms, json_file, csv_file):
                 sub_term_ids = extract_between_custom_symbols(definition, "@", "@")
                 sub_terms = id_to_term(json_file, sub_term_ids)
                 subbed_definition = replace_with_list_items(definition, sub_terms)
+                # Split the string based on 'Source'
+                split_strings = subbed_definition.split('Source')
+
+                # Extract the first and second parts
+                clean_definition = split_strings[0]
+                source = 'Source' + split_strings[1]
                 extracted_data.append({
-                    'Title': value['title'],
+                    'Term': value['title'],
                     'Status': value['status'],
                     'URL': value['url'],
-                    'Definition': subbed_definition
+                    'Definition': clean_definition,
+                    'Source': source
                 })
 
     try:
